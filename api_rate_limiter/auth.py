@@ -88,6 +88,17 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         raise credentials_exception
     return User(username=user["username"])
 
+
+def authenticate_token(token):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: Optional[str] = payload.get("sub")
+    except JWTError:
+        raise JWTError
+    
+    return username
+
+
 # Login function
 def login_user(user_login: UserLogin):
     user = authenticate_user(user_login.username, user_login.password)
